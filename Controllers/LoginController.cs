@@ -31,7 +31,7 @@ namespace Genesys_Core_API.Controllers
             var usr = await _loginService.GetUser(user);
             if (usr == null)
             {
-                return BadRequest(new { message = "Credenciales inválidas." });
+                return BadRequest(new { message = "El usuario no existe." });
             }
             string jwtToken = GenerateToken(usr);
             return Ok(new {token = jwtToken});

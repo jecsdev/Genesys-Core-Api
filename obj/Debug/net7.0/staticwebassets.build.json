@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "4sY3Tc0wR6VsW2aWPhn3ICIxd1EoYiAUGODkZfxrrC0=",
+  "Source": "Genesys Core API",
+  "BasePath": "_content/Genesys Core API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
