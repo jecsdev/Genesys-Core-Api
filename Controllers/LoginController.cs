@@ -34,7 +34,7 @@ namespace Genesys_Core_API.Controllers
                 return BadRequest(new { message = "El usuario no existe." });
             }
             string jwtToken = GenerateToken(usr);
-            return Ok(new {token = jwtToken});
+            return Ok(new {accessToken = jwtToken});
         }
 
         private string GenerateToken(User user)
