@@ -13,7 +13,7 @@ namespace Genesys_Core_API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Route("[controller]/[action]")]
     public class LoginController : ControllerBase
     {
         private readonly LoginService _loginService;
