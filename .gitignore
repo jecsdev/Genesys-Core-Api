@@ -4,3 +4,31 @@
 
 /appsettings.json
 /.vs/Genesis Core Api/CopilotIndices/18.0.988.22099
+# .NET Build
+bin/
+obj/
+*.csproj.user
+*.user
+*.suo
+.vs/
+
+# Publish
+publish/
+out/
+Release/
+[Pp]ublish/
+wwwroot_dist/
+
+# NuGet
+packages/
+*.nupkg
+*.snk
+
+# Secrets y entornos
+appsettings.*.json   # ← revisa antes de ignorar todos
+*.secrets
+.env
+
+# Logs y temporales
+*.log
+*.tmp

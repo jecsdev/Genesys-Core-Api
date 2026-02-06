@@ -1,0 +1,6 @@
+@Genesis_Core_Api_HostAddress = http://localhost:5056
+
+GET {{Genesis_Core_Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
