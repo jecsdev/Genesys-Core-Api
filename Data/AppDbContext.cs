@@ -14,6 +14,7 @@ namespace Genesis_Core_Api.Data
         public DbSet<Company> Companies { get; set; }
         public DbSet<Affiliate> Affiliates { get; set; }
         public DbSet<Dependent> Dependents { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -49,6 +50,10 @@ namespace Genesis_Core_Api.Data
                 .WithMany(a => a.Dependents)
                 .HasForeignKey(d => d.AffiliateId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+            .Property(u => u.Role)
+            .HasConversion<string>();
         }
     }
 }
