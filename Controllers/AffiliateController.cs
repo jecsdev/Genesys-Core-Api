@@ -7,47 +7,47 @@ namespace Genesis_Core_Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CompaniesController : ControllerBase
+    public class AffiliateController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public CompaniesController(AppDbContext context)
+        public AffiliateController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Companies
+        // GET: api/Affiliates
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Company>>> GetCompanies()
+        public async Task<ActionResult<IEnumerable<Affiliate>>> GetAffiliates()
         {
-            return await _context.Companies.ToListAsync();
+            return await _context.Affiliates.ToListAsync();
         }
 
-        // GET: api/Companies/5
+        // GET: api/Affiliates/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Company>> GetCompany(int id)
+        public async Task<ActionResult<Affiliate>> GetAffiliate(int id)
         {
-            var company = await _context.Companies.FindAsync(id);
+            var affiliate = await _context.Affiliates.FindAsync(id);
 
-            if (company == null)
+            if (affiliate == null)
             {
                 return NotFound();
             }
 
-            return company;
+            return affiliate;
         }
 
-        // PUT: api/Companies/5
+        // PUT: api/Affiliates/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCompany(int id, Company company)
+        public async Task<IActionResult> PutAffiliate(int id, Affiliate affiliate)
         {
-            if (id != company.Id)
+            if (id != affiliate.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(company).State = EntityState.Modified;
+            _context.Entry(affiliate).State = EntityState.Modified;
 
             try
             {
@@ -55,7 +55,7 @@ namespace Genesis_Core_Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CompanyExists(id))
+                if (!AffiliateExists(id))
                 {
                     return NotFound();
                 }
@@ -68,36 +68,36 @@ namespace Genesis_Core_Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Companies
+        // POST: api/Affiliates
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Company>> PostCompany(Company company)
+        public async Task<ActionResult<Affiliate>> PostAffiliate(Affiliate affiliate)
         {
-            _context.Companies.Add(company);
+            _context.Affiliates.Add(affiliate);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCompany", new { id = company.Id }, company);
+            return CreatedAtAction("GetAffiliate", new { id = affiliate.Id }, affiliate);
         }
 
-        // DELETE: api/Companies/5
+        // DELETE: api/Affiliates/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCompany(int id)
+        public async Task<IActionResult> DeleteAffiliate(int id)
         {
-            var company = await _context.Companies.FindAsync(id);
-            if (company == null)
+            var affiliate = await _context.Affiliates.FindAsync(id);
+            if (affiliate == null)
             {
                 return NotFound();
             }
 
-            _context.Companies.Remove(company);
+            _context.Affiliates.Remove(affiliate);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool CompanyExists(int id)
+        private bool AffiliateExists(int id)
         {
-            return _context.Companies.Any(e => e.Id == id);
+            return _context.Affiliates.Any(e => e.Id == id);
         }
     }
 }
