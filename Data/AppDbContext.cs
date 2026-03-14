@@ -35,7 +35,7 @@ namespace Genesis_Core_Api.Data
                 .IsUnique();
 
             modelBuilder.Entity<Affiliate>()
-                .HasOne<Company>()
+                .HasOne(a => a.Company)
                 .WithMany()
                 .HasForeignKey(a => a.CompanyId)
                 .OnDelete(DeleteBehavior.Restrict);

@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Genesis_Core_Api.Models
+﻿namespace Genesis_Core_Api.Models.dto
 {
-    public class Affiliate
+    public class AffiliateDto
     {
         public int Id { get; set; }
         public string AffiliateNumber { get; set; } = null!;
@@ -13,13 +11,10 @@ namespace Genesis_Core_Api.Models
         public string Phone { get; set; } = null!;
         public string Address { get; set; } = null!;
         public string Position { get; set; } = null!;
-        public bool IsActive { get; set; } = true;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        // Foreign Key
-        [ForeignKey("CompanyId")]
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
         public int CompanyId { get; set; }
-        // Navigation
-        public Company? Company { get; set; }
-        public ICollection<Dependent> Dependents { get; set; } = new List<Dependent>();
+        public string CompanyName { get; set; } = null!;
+        public int DependentsCount { get; set; }
     }
 }
