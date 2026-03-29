@@ -4,6 +4,7 @@ using Genesis_Core_Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Genesis_Core_Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260329231623_AddCompanyNavigation")]
+    partial class AddCompanyNavigation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,6 +42,9 @@ namespace Genesis_Core_Api.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompanyId1")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -77,6 +83,8 @@ namespace Genesis_Core_Api.Migrations
                         .IsUnique();
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("CompanyId1");
 
                     b.HasIndex("Identification")
                         .IsUnique();
@@ -214,10 +222,14 @@ namespace Genesis_Core_Api.Migrations
             modelBuilder.Entity("Genesis_Core_Api.Models.Affiliate", b =>
                 {
                     b.HasOne("Genesis_Core_Api.Models.Company", "Company")
-                        .WithMany("Affiliates")
+                        .WithMany()
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Genesis_Core_Api.Models.Company", null)
+                        .WithMany("Affiliates")
+                        .HasForeignKey("CompanyId1");
 
                     b.Navigation("Company");
                 });

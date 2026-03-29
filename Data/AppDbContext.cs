@@ -34,9 +34,10 @@ namespace Genesis_Core_Api.Data
                 .HasIndex(a => a.Identification)
                 .IsUnique();
 
+            // Affiliate
             modelBuilder.Entity<Affiliate>()
                 .HasOne(a => a.Company)
-                .WithMany()
+                .WithMany(c => c.Affiliates) 
                 .HasForeignKey(a => a.CompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
 

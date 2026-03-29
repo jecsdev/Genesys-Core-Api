@@ -9,5 +9,7 @@
         public string Address { get; set; } = null!;
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public ICollection<Affiliate> Affiliates { get; set; } = new List<Affiliate>();
     }
 }

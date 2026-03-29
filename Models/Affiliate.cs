@@ -15,8 +15,7 @@ namespace Genesis_Core_Api.Models
         public string Position { get; set; } = null!;
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        // Foreign Key
-        [ForeignKey("CompanyId")]
+     
         public int CompanyId { get; set; }
         // Navigation
         public Company? Company { get; set; }
