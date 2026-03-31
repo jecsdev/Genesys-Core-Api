@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Genesis_Core_Api.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/companies
         [HttpGet("companies")]
+        [Authorize(Roles = "Administrador, Contabilidad")]
         public async Task<IActionResult> GetCompaniesReport()
         {
             try
@@ -81,6 +83,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/affiliates
         [HttpGet("affiliates")]
+        [Authorize(Roles = "Administrador, Contabilidad")]
         public async Task<IActionResult> GetAffiliatesReport()
         {
             try
@@ -154,6 +157,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/dependents
         [HttpGet("dependents")]
+        [Authorize(Roles = "Administrador, Contabilidad")]
         public async Task<IActionResult> GetDependentsReport()
         {
             try
@@ -228,6 +232,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/affiliates-by-company
         [HttpGet("affiliates-by-company")]
+        [Authorize(Roles = "Administrador, Contabilidad")]
         public async Task<IActionResult> GetAffiliatesByCompanyReport()
         {
             try

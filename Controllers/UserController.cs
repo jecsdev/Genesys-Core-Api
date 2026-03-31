@@ -1,6 +1,7 @@
 ﻿using Genesis_Core_Api.Data;
 using Genesis_Core_Api.Models;
 using Genesis_Core_Api.Models.dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -86,6 +87,7 @@ namespace Genesis_Core_Api.Controllers
 
         // POST: api/user
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<ActionResult<UserDto>> PostUser(CreateUserDto dto)
         {
             if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
@@ -184,6 +186,7 @@ namespace Genesis_Core_Api.Controllers
 
         // DELETE: api/user/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
