@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -24,7 +25,8 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
     {
         var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Email == dto.Email && u.IsActive);
+            .FirstOrDefaultAsync(u => u.Username == dto.Username && u.IsActive);
+
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
             return Unauthorized(new { message = "Usuario o contraseña incorrectos." });
 
@@ -37,7 +39,7 @@ public class AuthController : ControllerBase
         {
             Token = token,
             FullName = user.FullName,
-            Email = user.Email,
+            Username = user.Username,
             Role = user.Role
         });
     }
@@ -51,7 +53,7 @@ public class AuthController : ControllerBase
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("username", user.Username),
             new Claim(ClaimTypes.Name, user.FullName),
             new Claim(ClaimTypes.Role, user.Role.ToString())
         };

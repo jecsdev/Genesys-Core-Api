@@ -28,7 +28,7 @@ namespace Genesis_Core_Api.Controllers
                 {
                     Id = u.Id,
                     FullName = u.FullName,
-                    Email = u.Email,
+                    Username = u.Username,
                     Role = u.Role,
                     IsActive = u.IsActive,
                     CreatedAt = u.CreatedAt,
@@ -50,7 +50,7 @@ namespace Genesis_Core_Api.Controllers
             {
                 Id = user.Id,
                 FullName = user.FullName,
-                Email = user.Email,
+                Username = user.Username,
                 Role = user.Role,
                 IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
@@ -62,13 +62,13 @@ namespace Genesis_Core_Api.Controllers
         [HttpGet("profile")]
         public async Task<ActionResult<UserDto>> GetProfile()
         {
-            var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+            var usernameClaim = User.FindFirst("username")?.Value;
 
-            if (emailClaim == null)
+            if (usernameClaim == null)
                 return Unauthorized();
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == emailClaim);
+                .FirstOrDefaultAsync(u => u.Username == usernameClaim);
 
             if (user == null)
                 return NotFound();
@@ -77,7 +77,7 @@ namespace Genesis_Core_Api.Controllers
             {
                 Id = user.Id,
                 FullName = user.FullName,
-                Email = user.Email,
+                Username = user.Username,
                 Role = user.Role,
                 IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
@@ -87,16 +87,16 @@ namespace Genesis_Core_Api.Controllers
 
         // POST: api/user
         [HttpPost]
-        [Authorize(Roles = "Administrador")]
-        public async Task<ActionResult<UserDto>> PostUser(CreateUserDto dto)
+        [Authorize(Roles = "Administrator")]
+        public async Task<ActionResult<UserDto>> PostUser([FromBody] CreateUserDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-                return BadRequest(new { message = "Ya existe un usuario con ese correo." });
+            if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
+                return BadRequest(new { message = "Ya existe un usuario con ese nombre de usuario." });
 
             var user = new User
             {
                 FullName = dto.FullName,
-                Email = dto.Email,
+                Username = dto.Username,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 Role = dto.Role,
                 IsActive = dto.IsActive,
@@ -110,7 +110,7 @@ namespace Genesis_Core_Api.Controllers
             {
                 Id = user.Id,
                 FullName = user.FullName,
-                Email = user.Email,
+                Username = user.Username,
                 Role = user.Role,
                 IsActive = user.IsActive,
                 CreatedAt = user.CreatedAt,
@@ -120,7 +120,7 @@ namespace Genesis_Core_Api.Controllers
 
         // PUT: api/user/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, UpdateUserDto dto)
+        public async Task<IActionResult> PutUser(int id, [FromBody] UpdateUserDto dto)
         {
             var user = await _context.Users.FindAsync(id);
 
@@ -128,7 +128,7 @@ namespace Genesis_Core_Api.Controllers
                 return NotFound();
 
             user.FullName = dto.FullName;
-            user.Email = dto.Email;
+            user.Username = dto.Username;
             user.Role = dto.Role;
             user.IsActive = dto.IsActive;
 
@@ -139,21 +139,21 @@ namespace Genesis_Core_Api.Controllers
 
         // PUT: api/user/profile
         [HttpPut("profile")]
-        public async Task<IActionResult> UpdateProfile(UpdateProfileDto dto)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
         {
-            var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+            var usernameClaim = User.FindFirst("username")?.Value;
 
-            if (emailClaim == null)
+            if (usernameClaim == null)
                 return Unauthorized();
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == emailClaim);
+                .FirstOrDefaultAsync(u => u.Username == usernameClaim);
 
             if (user == null)
                 return NotFound();
 
             user.FullName = dto.FullName;
-            user.Email = dto.Email;
+            user.Username = dto.Username;
 
             await _context.SaveChangesAsync();
 
@@ -162,15 +162,15 @@ namespace Genesis_Core_Api.Controllers
 
         // PUT: api/user/change-password
         [HttpPut("change-password")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
-            var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
+            var usernameClaim = User.FindFirst("username")?.Value;
 
-            if (emailClaim == null)
+            if (usernameClaim == null)
                 return Unauthorized();
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == emailClaim);
+                .FirstOrDefaultAsync(u => u.Username == usernameClaim);
 
             if (user == null)
                 return NotFound();
@@ -186,7 +186,7 @@ namespace Genesis_Core_Api.Controllers
 
         // DELETE: api/user/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
