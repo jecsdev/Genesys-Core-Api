@@ -20,5 +20,13 @@ namespace Genesis_Core_Api.Models
         // Navigation
         public Company? Company { get; set; }
         public ICollection<Dependent> Dependents { get; set; } = new List<Dependent>();
+
+        // Plan
+        public int? ServicePlanId { get; set; }
+        public DateTime? PlanStartDate { get; set; }
+
+        // Navigation
+        public ServicePlan? ServicePlan { get; set; }
+        public ICollection<AffiliatePayment> Payments { get; set; } = new List<AffiliatePayment>();
     }
 }
