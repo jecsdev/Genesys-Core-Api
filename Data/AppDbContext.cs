@@ -65,12 +65,12 @@ namespace Genesis_Core_Api.Data
                 .HasForeignKey(b => b.ServicePlanId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ServicePlan → Affiliate
+            // ServicePlan → Affiliate (ahora obligatorio)
             modelBuilder.Entity<Affiliate>()
                 .HasOne(a => a.ServicePlan)
                 .WithMany(p => p.Affiliates)
                 .HasForeignKey(a => a.ServicePlanId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // AffiliatePayment — precisión decimal
             modelBuilder.Entity<AffiliatePayment>()

@@ -22,8 +22,8 @@ namespace Genesis_Core_Api.Models
         public ICollection<Dependent> Dependents { get; set; } = new List<Dependent>();
 
         // Plan
-        public int? ServicePlanId { get; set; }
-        public DateTime? PlanStartDate { get; set; }
+        public int ServicePlanId { get; set; }
+        public DateTime PlanStartDate { get; set; } = DateTime.UtcNow;
 
         // Navigation
         public ServicePlan? ServicePlan { get; set; }

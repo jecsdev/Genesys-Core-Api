@@ -24,6 +24,7 @@ namespace Genesis_Core_Api.Controllers
             return await _context.Affiliates
                 .Include(a => a.Company)
                 .Include(a => a.Dependents)
+                .Include(a => a.ServicePlan)
                 .Select(a => new AffiliateDto
                 {
                     Id = a.Id,
@@ -39,7 +40,16 @@ namespace Genesis_Core_Api.Controllers
                     CreatedAt = a.CreatedAt,
                     CompanyId = a.CompanyId,
                     CompanyName = a.Company != null ? a.Company.Name : "",
-                    DependentsCount = a.Dependents.Count
+                    DependentsCount = a.Dependents.Count,
+                    ServicePlanId = a.ServicePlanId,
+                    ServicePlanName = a.ServicePlan != null ? a.ServicePlan.Name : "",
+                    ServicePlanBasePrice = a.ServicePlan != null ? a.ServicePlan.BasePrice : 0,
+                    IncludedDependents = a.ServicePlan != null ? a.ServicePlan.IncludedDependents : 0,
+                    ExtraDependentPrice = a.ServicePlan != null ? a.ServicePlan.ExtraDependentPrice : 0,
+                    PlanStartDate = a.PlanStartDate,
+                    MonthlyAmount = a.ServicePlan == null ? 0 :
+                        a.ServicePlan.BasePrice +
+                        (Math.Max(0, a.Dependents.Count - a.ServicePlan.IncludedDependents) * a.ServicePlan.ExtraDependentPrice)
                 })
                 .ToListAsync();
         }
@@ -51,6 +61,7 @@ namespace Genesis_Core_Api.Controllers
             var a = await _context.Affiliates
                 .Include(a => a.Company)
                 .Include(a => a.Dependents)
+                .Include(a => a.ServicePlan)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (a == null)
@@ -71,7 +82,16 @@ namespace Genesis_Core_Api.Controllers
                 CreatedAt = a.CreatedAt,
                 CompanyId = a.CompanyId,
                 CompanyName = a.Company != null ? a.Company.Name : "",
-                DependentsCount = a.Dependents.Count
+                DependentsCount = a.Dependents.Count,
+                ServicePlanId = a.ServicePlanId,
+                ServicePlanName = a.ServicePlan != null ? a.ServicePlan.Name : "",
+                ServicePlanBasePrice = a.ServicePlan != null ? a.ServicePlan.BasePrice : 0,
+                IncludedDependents = a.ServicePlan != null ? a.ServicePlan.IncludedDependents : 0,
+                ExtraDependentPrice = a.ServicePlan != null ? a.ServicePlan.ExtraDependentPrice : 0,
+                PlanStartDate = a.PlanStartDate,
+                MonthlyAmount = a.ServicePlan == null ? 0 :
+                    a.ServicePlan.BasePrice +
+                    (Math.Max(0, a.Dependents.Count - a.ServicePlan.IncludedDependents) * a.ServicePlan.ExtraDependentPrice)
             };
         }
 
@@ -82,6 +102,7 @@ namespace Genesis_Core_Api.Controllers
             var a = await _context.Affiliates
                 .Include(a => a.Company)
                 .Include(a => a.Dependents)
+                .Include(a => a.ServicePlan)
                 .FirstOrDefaultAsync(a => a.Identification == identification);
 
             if (a == null)
@@ -102,7 +123,16 @@ namespace Genesis_Core_Api.Controllers
                 CreatedAt = a.CreatedAt,
                 CompanyId = a.CompanyId,
                 CompanyName = a.Company != null ? a.Company.Name : "",
-                DependentsCount = a.Dependents.Count
+                DependentsCount = a.Dependents.Count,
+                ServicePlanId = a.ServicePlanId,
+                ServicePlanName = a.ServicePlan != null ? a.ServicePlan.Name : "",
+                ServicePlanBasePrice = a.ServicePlan != null ? a.ServicePlan.BasePrice : 0,
+                IncludedDependents = a.ServicePlan != null ? a.ServicePlan.IncludedDependents : 0,
+                ExtraDependentPrice = a.ServicePlan != null ? a.ServicePlan.ExtraDependentPrice : 0,
+                PlanStartDate = a.PlanStartDate,
+                MonthlyAmount = a.ServicePlan == null ? 0 :
+                    a.ServicePlan.BasePrice +
+                    (Math.Max(0, a.Dependents.Count - a.ServicePlan.IncludedDependents) * a.ServicePlan.ExtraDependentPrice)
             };
         }
 
@@ -110,6 +140,11 @@ namespace Genesis_Core_Api.Controllers
         [HttpPost]
         public async Task<ActionResult<AffiliateDto>> PostAffiliate(CreateAffiliateDto dto)
         {
+            // Validar que el plan exista y esté activo
+            var plan = await _context.ServicePlans.FindAsync(dto.ServicePlanId);
+            if (plan == null || !plan.IsActive)
+                return BadRequest(new { message = "El plan seleccionado no existe o está inactivo." });
+
             // Generar número de afiliado automáticamente
             var count = await _context.Affiliates.CountAsync();
             var affiliateNumber = $"AF-{DateTime.UtcNow.Year}-{String.Format("{0:000}", count + 1)}";
@@ -126,6 +161,8 @@ namespace Genesis_Core_Api.Controllers
                 Position = dto.Position,
                 IsActive = dto.IsActive,
                 CompanyId = dto.CompanyId,
+                ServicePlanId = dto.ServicePlanId,
+                PlanStartDate = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -147,7 +184,14 @@ namespace Genesis_Core_Api.Controllers
                 CreatedAt = affiliate.CreatedAt,
                 CompanyId = affiliate.CompanyId,
                 CompanyName = "",
-                DependentsCount = 0
+                DependentsCount = 0,
+                ServicePlanId = affiliate.ServicePlanId,
+                ServicePlanName = plan.Name,
+                ServicePlanBasePrice = plan.BasePrice,
+                IncludedDependents = plan.IncludedDependents,
+                ExtraDependentPrice = plan.ExtraDependentPrice,
+                PlanStartDate = affiliate.PlanStartDate,
+                MonthlyAmount = plan.BasePrice
             });
         }
 
@@ -160,6 +204,17 @@ namespace Genesis_Core_Api.Controllers
             if (affiliate == null)
                 return NotFound();
 
+            // Validar el plan
+            var plan = await _context.ServicePlans.FindAsync(dto.ServicePlanId);
+            if (plan == null || !plan.IsActive)
+                return BadRequest(new { message = "El plan seleccionado no existe o está inactivo." });
+
+            // Si cambió de plan, actualizar la fecha de inicio
+            if (affiliate.ServicePlanId != dto.ServicePlanId)
+            {
+                affiliate.PlanStartDate = DateTime.UtcNow;
+            }
+
             affiliate.FirstName = dto.FirstName;
             affiliate.LastName = dto.LastName;
             affiliate.Identification = dto.Identification;
@@ -169,6 +224,7 @@ namespace Genesis_Core_Api.Controllers
             affiliate.Position = dto.Position;
             affiliate.IsActive = dto.IsActive;
             affiliate.CompanyId = dto.CompanyId;
+            affiliate.ServicePlanId = dto.ServicePlanId;
 
             await _context.SaveChangesAsync();
 

@@ -16,5 +16,12 @@
         public int CompanyId { get; set; }
         public string CompanyName { get; set; } = null!;
         public int DependentsCount { get; set; }
+        public int ServicePlanId { get; set; }
+        public string ServicePlanName { get; set; } = null!;
+        public decimal ServicePlanBasePrice { get; set; }
+        public int IncludedDependents { get; set; }
+        public decimal ExtraDependentPrice { get; set; }
+        public DateTime PlanStartDate { get; set; }
+        public decimal MonthlyAmount { get; set; }
     }
 }

@@ -11,5 +11,6 @@
         public string Position { get; set; } = null!;
         public bool IsActive { get; set; } = true;
         public int CompanyId { get; set; }
+        public int ServicePlanId { get; set; }
     }
 }
