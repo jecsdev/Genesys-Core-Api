@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Genesis_Core_Api.Data;
+using Genesis_Core_Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
