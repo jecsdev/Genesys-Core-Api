@@ -298,5 +298,247 @@ namespace Genesis_Core_Api.Controllers
                 return StatusCode(500, new { message = ex.Message, detail = ex.StackTrace });
             }
         }
+        // GET: api/report/payments
+        [HttpGet("payments")]
+        [Authorize(Roles = "Administrador, Contabilidad")]
+        public async Task<IActionResult> GetPaymentsReport()
+        {
+            try
+            {
+                var payments = await _context.AffiliatePayments
+                    .Include(p => p.Affiliate)
+                        .ThenInclude(a => a!.Company)
+                    .OrderByDescending(p => p.PaymentDate)
+                    .ToListAsync();
+
+                var workbook = new XLWorkbook();
+                var ws = workbook.Worksheets.Add("Pagos");
+
+                ws.Cell(1, 1).Value = "ID";
+                ws.Cell(1, 2).Value = "Nº Afiliado";
+                ws.Cell(1, 3).Value = "Nombre Completo";
+                ws.Cell(1, 4).Value = "Empresa";
+                ws.Cell(1, 5).Value = "Fecha Pago";
+                ws.Cell(1, 6).Value = "Fecha Vencimiento";
+                ws.Cell(1, 7).Value = "Monto";
+                ws.Cell(1, 8).Value = "Método de Pago";
+                ws.Cell(1, 9).Value = "Nº Referencia";
+                ws.Cell(1, 10).Value = "Estado";
+                ws.Cell(1, 11).Value = "Notas";
+
+                var headerRange = ws.Range(1, 1, 1, 11);
+                headerRange.Style.Font.Bold = true;
+                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                headerRange.Style.Font.FontColor = XLColor.White;
+                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                for (int i = 0; i < payments.Count; i++)
+                {
+                    var p = payments[i];
+                    var row = i + 2;
+                    ws.Cell(row, 1).Value = p.Id;
+                    ws.Cell(row, 2).Value = p.Affiliate?.AffiliateNumber ?? "";
+                    ws.Cell(row, 3).Value = p.Affiliate != null ? $"{p.Affiliate.FirstName} {p.Affiliate.LastName}" : "";
+                    ws.Cell(row, 4).Value = p.Affiliate?.Company?.Name ?? "";
+                    ws.Cell(row, 5).Value = p.PaymentDate.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 6).Value = p.DueDate.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 7).Value = p.Amount;
+                    ws.Cell(row, 8).Value = p.PaymentMethod;
+                    ws.Cell(row, 9).Value = p.ReferenceNumber ?? "";
+                    ws.Cell(row, 10).Value = p.Status switch
+                    {
+                        PaymentStatus.Paid => "Pagado",
+                        PaymentStatus.Overdue => "Vencido",
+                        _ => "Pendiente"
+                    };
+                    ws.Cell(row, 11).Value = p.Notes ?? "";
+
+                    if (i % 2 == 1)
+                        ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                }
+
+                ws.Column(7).Style.NumberFormat.Format = "#,##0.00";
+                ws.Columns().AdjustToContents();
+
+                byte[] content;
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
+                }
+                workbook.Dispose();
+
+                return File(content,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"pagos_{DateTime.Now:yyyyMMdd}.xlsx");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message, detail = ex.StackTrace });
+            }
+        }
+
+        // GET: api/report/payments-by-status
+        [HttpGet("payments-by-status")]
+        [Authorize(Roles = "Administrador, Contabilidad")]
+        public async Task<IActionResult> GetPaymentsByStatusReport()
+        {
+            try
+            {
+                var payments = await _context.AffiliatePayments
+                    .Include(p => p.Affiliate)
+                        .ThenInclude(a => a!.Company)
+                    .OrderBy(p => p.Status)
+                        .ThenByDescending(p => p.PaymentDate)
+                    .ToListAsync();
+
+                var workbook = new XLWorkbook();
+                var ws = workbook.Worksheets.Add("Pagos por Estado");
+
+                ws.Cell(1, 1).Value = "Estado";
+                ws.Cell(1, 2).Value = "Nº Afiliado";
+                ws.Cell(1, 3).Value = "Nombre Completo";
+                ws.Cell(1, 4).Value = "Empresa";
+                ws.Cell(1, 5).Value = "Fecha Pago";
+                ws.Cell(1, 6).Value = "Fecha Vencimiento";
+                ws.Cell(1, 7).Value = "Monto";
+                ws.Cell(1, 8).Value = "Método de Pago";
+                ws.Cell(1, 9).Value = "Nº Referencia";
+                ws.Cell(1, 10).Value = "Notas";
+
+                var headerRange = ws.Range(1, 1, 1, 10);
+                headerRange.Style.Font.Bold = true;
+                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                headerRange.Style.Font.FontColor = XLColor.White;
+                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                for (int i = 0; i < payments.Count; i++)
+                {
+                    var p = payments[i];
+                    var row = i + 2;
+                    ws.Cell(row, 1).Value = p.Status switch
+                    {
+                        PaymentStatus.Paid => "Pagado",
+                        PaymentStatus.Overdue => "Vencido",
+                        _ => "Pendiente"
+                    };
+                    ws.Cell(row, 2).Value = p.Affiliate?.AffiliateNumber ?? "";
+                    ws.Cell(row, 3).Value = p.Affiliate != null ? $"{p.Affiliate.FirstName} {p.Affiliate.LastName}" : "";
+                    ws.Cell(row, 4).Value = p.Affiliate?.Company?.Name ?? "";
+                    ws.Cell(row, 5).Value = p.PaymentDate.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 6).Value = p.DueDate.ToString("dd/MM/yyyy");
+                    ws.Cell(row, 7).Value = p.Amount;
+                    ws.Cell(row, 8).Value = p.PaymentMethod;
+                    ws.Cell(row, 9).Value = p.ReferenceNumber ?? "";
+                    ws.Cell(row, 10).Value = p.Notes ?? "";
+
+                    if (i % 2 == 1)
+                        ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                }
+
+                ws.Column(7).Style.NumberFormat.Format = "#,##0.00";
+                ws.Columns().AdjustToContents();
+
+                byte[] content;
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
+                }
+                workbook.Dispose();
+
+                return File(content,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"pagos_por_estado_{DateTime.Now:yyyyMMdd}.xlsx");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message, detail = ex.StackTrace });
+            }
+        }
+
+        // GET: api/report/payments-by-company
+        [HttpGet("payments-by-company")]
+        [Authorize(Roles = "Administrador, Contabilidad")]
+        public async Task<IActionResult> GetPaymentsByCompanyReport()
+        {
+            try
+            {
+                var companies = await _context.Companies
+                    .Include(c => c.Affiliates)
+                        .ThenInclude(a => a.Payments)
+                    .OrderBy(c => c.Name)
+                    .ToListAsync();
+
+                var workbook = new XLWorkbook();
+                var ws = workbook.Worksheets.Add("Pagos por Empresa");
+
+                ws.Cell(1, 1).Value = "Empresa";
+                ws.Cell(1, 2).Value = "Nº Afiliado";
+                ws.Cell(1, 3).Value = "Nombre Completo";
+                ws.Cell(1, 4).Value = "Fecha Pago";
+                ws.Cell(1, 5).Value = "Fecha Vencimiento";
+                ws.Cell(1, 6).Value = "Monto";
+                ws.Cell(1, 7).Value = "Método de Pago";
+                ws.Cell(1, 8).Value = "Nº Referencia";
+                ws.Cell(1, 9).Value = "Estado";
+                ws.Cell(1, 10).Value = "Notas";
+
+                var headerRange = ws.Range(1, 1, 1, 10);
+                headerRange.Style.Font.Bold = true;
+                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                headerRange.Style.Font.FontColor = XLColor.White;
+                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                int row = 2;
+                foreach (var company in companies)
+                {
+                    foreach (var a in company.Affiliates.OrderBy(a => a.LastName))
+                    {
+                        foreach (var p in a.Payments.OrderByDescending(p => p.PaymentDate))
+                        {
+                            ws.Cell(row, 1).Value = company.Name;
+                            ws.Cell(row, 2).Value = a.AffiliateNumber;
+                            ws.Cell(row, 3).Value = $"{a.FirstName} {a.LastName}";
+                            ws.Cell(row, 4).Value = p.PaymentDate.ToString("dd/MM/yyyy");
+                            ws.Cell(row, 5).Value = p.DueDate.ToString("dd/MM/yyyy");
+                            ws.Cell(row, 6).Value = p.Amount;
+                            ws.Cell(row, 7).Value = p.PaymentMethod;
+                            ws.Cell(row, 8).Value = p.ReferenceNumber ?? "";
+                            ws.Cell(row, 9).Value = p.Status switch
+                            {
+                                PaymentStatus.Paid => "Pagado",
+                                PaymentStatus.Overdue => "Vencido",
+                                _ => "Pendiente"
+                            };
+                            ws.Cell(row, 10).Value = p.Notes ?? "";
+
+                            if (row % 2 == 1)
+                                ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                            row++;
+                        }
+                    }
+                }
+
+                ws.Column(6).Style.NumberFormat.Format = "#,##0.00";
+                ws.Columns().AdjustToContents();
+
+                byte[] content;
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
+                }
+                workbook.Dispose();
+
+                return File(content,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"pagos_por_empresa_{DateTime.Now:yyyyMMdd}.xlsx");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message, detail = ex.StackTrace });
+            }
+        }
     }
 }
