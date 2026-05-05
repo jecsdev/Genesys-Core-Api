@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using Genesis_Core_Api.Data;
 using Genesis_Core_Api.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +29,7 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
-                var workbook = new XLWorkbook();
+                using var workbook = new XLWorkbook();
                 var ws = workbook.Worksheets.Add("Empresas");
 
                 ws.Cell(1, 1).Value = "ID";
@@ -64,13 +64,9 @@ namespace Genesis_Core_Api.Controllers
 
                 ws.Columns().AdjustToContents();
 
-                byte[] content;
-                using (var stream = new MemoryStream())
-                {
-                    workbook.SaveAs(stream);
-                    content = stream.ToArray();
-                }
-                workbook.Dispose();
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -95,7 +91,7 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(a => a.LastName)
                     .ToListAsync();
 
-                var workbook = new XLWorkbook();
+                using var workbook = new XLWorkbook();
                 var ws = workbook.Worksheets.Add("Titulares");
 
                 ws.Cell(1, 1).Value = "Nº Afiliado";
@@ -138,13 +134,9 @@ namespace Genesis_Core_Api.Controllers
 
                 ws.Columns().AdjustToContents();
 
-                byte[] content;
-                using (var stream = new MemoryStream())
-                {
-                    workbook.SaveAs(stream);
-                    content = stream.ToArray();
-                }
-                workbook.Dispose();
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -169,7 +161,7 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(d => d.LastName)
                     .ToListAsync();
 
-                var workbook = new XLWorkbook();
+                using var workbook = new XLWorkbook();
                 var ws = workbook.Worksheets.Add("Dependientes");
 
                 ws.Cell(1, 1).Value = "Nº Dependiente";
@@ -213,13 +205,9 @@ namespace Genesis_Core_Api.Controllers
 
                 ws.Columns().AdjustToContents();
 
-                byte[] content;
-                using (var stream = new MemoryStream())
-                {
-                    workbook.SaveAs(stream);
-                    content = stream.ToArray();
-                }
-                workbook.Dispose();
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -244,7 +232,7 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
-                var workbook = new XLWorkbook();
+                using var workbook = new XLWorkbook();
                 var ws = workbook.Worksheets.Add("Titulares por Empresa");
 
                 ws.Cell(1, 1).Value = "Empresa";
@@ -282,13 +270,9 @@ namespace Genesis_Core_Api.Controllers
 
                 ws.Columns().AdjustToContents();
 
-                byte[] content;
-                using (var stream = new MemoryStream())
-                {
-                    workbook.SaveAs(stream);
-                    content = stream.ToArray();
-                }
-                workbook.Dispose();
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -299,6 +283,7 @@ namespace Genesis_Core_Api.Controllers
                 return StatusCode(500, new { message = ex.Message, detail = ex.StackTrace });
             }
         }
+
         // GET: api/report/payments
         [HttpGet("payments")]
         [Authorize(Roles = "Administrator, Accountant")]
@@ -312,7 +297,7 @@ namespace Genesis_Core_Api.Controllers
                     .OrderByDescending(p => p.PaymentDate)
                     .ToListAsync();
 
-                var workbook = new XLWorkbook();
+                using var workbook = new XLWorkbook();
                 var ws = workbook.Worksheets.Add("Pagos");
 
                 ws.Cell(1, 1).Value = "ID";
@@ -361,13 +346,9 @@ namespace Genesis_Core_Api.Controllers
                 ws.Column(7).Style.NumberFormat.Format = "#,##0.00";
                 ws.Columns().AdjustToContents();
 
-                byte[] content;
-                using (var stream = new MemoryStream())
-                {
-                    workbook.SaveAs(stream);
-                    content = stream.ToArray();
-                }
-                workbook.Dispose();
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -393,7 +374,7 @@ namespace Genesis_Core_Api.Controllers
                         .ThenByDescending(p => p.PaymentDate)
                     .ToListAsync();
 
-                var workbook = new XLWorkbook();
+                using var workbook = new XLWorkbook();
                 var ws = workbook.Worksheets.Add("Pagos por Estado");
 
                 ws.Cell(1, 1).Value = "Estado";
@@ -440,13 +421,9 @@ namespace Genesis_Core_Api.Controllers
                 ws.Column(7).Style.NumberFormat.Format = "#,##0.00";
                 ws.Columns().AdjustToContents();
 
-                byte[] content;
-                using (var stream = new MemoryStream())
-                {
-                    workbook.SaveAs(stream);
-                    content = stream.ToArray();
-                }
-                workbook.Dispose();
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -471,7 +448,7 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
-                var workbook = new XLWorkbook();
+                using var workbook = new XLWorkbook();
                 var ws = workbook.Worksheets.Add("Pagos por Empresa");
 
                 ws.Cell(1, 1).Value = "Empresa";
@@ -524,13 +501,9 @@ namespace Genesis_Core_Api.Controllers
                 ws.Column(6).Style.NumberFormat.Format = "#,##0.00";
                 ws.Columns().AdjustToContents();
 
-                byte[] content;
-                using (var stream = new MemoryStream())
-                {
-                    workbook.SaveAs(stream);
-                    content = stream.ToArray();
-                }
-                workbook.Dispose();
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
