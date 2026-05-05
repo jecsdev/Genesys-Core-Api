@@ -20,7 +20,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/companies
         [HttpGet("companies")]
-        [Authorize(Roles = "Administrador, Contabilidad")]
+        [Authorize(Roles = "Administrator, Accountant")]
         public async Task<IActionResult> GetCompaniesReport()
         {
             try
@@ -84,7 +84,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/affiliates
         [HttpGet("affiliates")]
-        [Authorize(Roles = "Administrador, Contabilidad")]
+        [Authorize(Roles = "Administrator, Accountant")]
         public async Task<IActionResult> GetAffiliatesReport()
         {
             try
@@ -158,7 +158,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/dependents
         [HttpGet("dependents")]
-        [Authorize(Roles = "Administrador, Contabilidad")]
+        [Authorize(Roles = "Administrator, Accountant")]
         public async Task<IActionResult> GetDependentsReport()
         {
             try
@@ -233,7 +233,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/affiliates-by-company
         [HttpGet("affiliates-by-company")]
-        [Authorize(Roles = "Administrador, Contabilidad")]
+        [Authorize(Roles = "Administrator, Accountant")]
         public async Task<IActionResult> GetAffiliatesByCompanyReport()
         {
             try
@@ -301,7 +301,7 @@ namespace Genesis_Core_Api.Controllers
         }
         // GET: api/report/payments
         [HttpGet("payments")]
-        [Authorize(Roles = "Administrador, Contabilidad")]
+        [Authorize(Roles = "Administrator, Accountant")]
         public async Task<IActionResult> GetPaymentsReport()
         {
             try
@@ -381,7 +381,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/payments-by-status
         [HttpGet("payments-by-status")]
-        [Authorize(Roles = "Administrador, Contabilidad")]
+        [Authorize(Roles = "Administrator, Accountant")]
         public async Task<IActionResult> GetPaymentsByStatusReport()
         {
             try
@@ -460,7 +460,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/report/payments-by-company
         [HttpGet("payments-by-company")]
-        [Authorize(Roles = "Administrador, Contabilidad")]
+        [Authorize(Roles = "Administrator, Accountant")]
         public async Task<IActionResult> GetPaymentsByCompanyReport()
         {
             try
