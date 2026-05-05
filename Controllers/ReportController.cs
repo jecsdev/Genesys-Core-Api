@@ -26,6 +26,7 @@ namespace Genesis_Core_Api.Controllers
             try
             {
                 var companies = await _context.Companies
+                    .AsNoTracking()
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
@@ -86,6 +87,7 @@ namespace Genesis_Core_Api.Controllers
             try
             {
                 var affiliates = await _context.Affiliates
+                    .AsNoTracking()
                     .Include(a => a.Company)
                     .Include(a => a.Dependents)
                     .OrderBy(a => a.LastName)
@@ -156,6 +158,7 @@ namespace Genesis_Core_Api.Controllers
             try
             {
                 var dependents = await _context.Dependents
+                    .AsNoTracking()
                     .Include(d => d.Affiliate)
                         .ThenInclude(a => a!.Company)
                     .OrderBy(d => d.LastName)
@@ -227,6 +230,7 @@ namespace Genesis_Core_Api.Controllers
             try
             {
                 var companies = await _context.Companies
+                    .AsNoTracking()
                     .Include(c => c.Affiliates)
                         .ThenInclude(a => a.Dependents)
                     .OrderBy(c => c.Name)
@@ -292,6 +296,7 @@ namespace Genesis_Core_Api.Controllers
             try
             {
                 var payments = await _context.AffiliatePayments
+                    .AsNoTracking()
                     .Include(p => p.Affiliate)
                         .ThenInclude(a => a!.Company)
                     .OrderByDescending(p => p.PaymentDate)
@@ -368,6 +373,7 @@ namespace Genesis_Core_Api.Controllers
             try
             {
                 var payments = await _context.AffiliatePayments
+                    .AsNoTracking()
                     .Include(p => p.Affiliate)
                         .ThenInclude(a => a!.Company)
                     .OrderBy(p => p.Status)
@@ -443,6 +449,7 @@ namespace Genesis_Core_Api.Controllers
             try
             {
                 var companies = await _context.Companies
+                    .AsNoTracking()
                     .Include(c => c.Affiliates)
                         .ThenInclude(a => a.Payments)
                     .OrderBy(c => c.Name)
