@@ -30,44 +30,47 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
-                using var workbook = new XLWorkbook();
-                var ws = workbook.Worksheets.Add("Empresas");
-
-                ws.Cell(1, 1).Value = "ID";
-                ws.Cell(1, 2).Value = "Nombre";
-                ws.Cell(1, 3).Value = "RNC";
-                ws.Cell(1, 4).Value = "Teléfono";
-                ws.Cell(1, 5).Value = "Dirección";
-                ws.Cell(1, 6).Value = "Estado";
-                ws.Cell(1, 7).Value = "Fecha Registro";
-
-                var headerRange = ws.Range(1, 1, 1, 7);
-                headerRange.Style.Font.Bold = true;
-                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
-                headerRange.Style.Font.FontColor = XLColor.White;
-                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                for (int i = 0; i < companies.Count; i++)
+                byte[] content;
+                using (var workbook = new XLWorkbook())
                 {
-                    var c = companies[i];
-                    var row = i + 2;
-                    ws.Cell(row, 1).Value = c.Id;
-                    ws.Cell(row, 2).Value = c.Name;
-                    ws.Cell(row, 3).Value = c.Rnc;
-                    ws.Cell(row, 4).Value = c.Phone;
-                    ws.Cell(row, 5).Value = c.Address;
-                    ws.Cell(row, 6).Value = c.IsActive ? "Activa" : "Inactiva";
-                    ws.Cell(row, 7).Value = c.CreatedAt.ToString("dd/MM/yyyy");
+                    var ws = workbook.Worksheets.Add("Empresas");
 
-                    if (i % 2 == 1)
-                        ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                    ws.Cell(1, 1).Value = "ID";
+                    ws.Cell(1, 2).Value = "Nombre";
+                    ws.Cell(1, 3).Value = "RNC";
+                    ws.Cell(1, 4).Value = "Teléfono";
+                    ws.Cell(1, 5).Value = "Dirección";
+                    ws.Cell(1, 6).Value = "Estado";
+                    ws.Cell(1, 7).Value = "Fecha Registro";
+
+                    var headerRange = ws.Range(1, 1, 1, 7);
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                    headerRange.Style.Font.FontColor = XLColor.White;
+                    headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                    for (int i = 0; i < companies.Count; i++)
+                    {
+                        var c = companies[i];
+                        var row = i + 2;
+                        ws.Cell(row, 1).Value = c.Id;
+                        ws.Cell(row, 2).Value = c.Name;
+                        ws.Cell(row, 3).Value = c.Rnc;
+                        ws.Cell(row, 4).Value = c.Phone;
+                        ws.Cell(row, 5).Value = c.Address;
+                        ws.Cell(row, 6).Value = c.IsActive ? "Activa" : "Inactiva";
+                        ws.Cell(row, 7).Value = c.CreatedAt.ToString("dd/MM/yyyy");
+
+                        if (i % 2 == 1)
+                            ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                    }
+
+                    ws.Columns().AdjustToContents();
+
+                    using var stream = new MemoryStream();
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
                 }
-
-                ws.Columns().AdjustToContents();
-
-                using var stream = new MemoryStream();
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -93,52 +96,55 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(a => a.LastName)
                     .ToListAsync();
 
-                using var workbook = new XLWorkbook();
-                var ws = workbook.Worksheets.Add("Titulares");
-
-                ws.Cell(1, 1).Value = "Nº Afiliado";
-                ws.Cell(1, 2).Value = "Nombre";
-                ws.Cell(1, 3).Value = "Apellido";
-                ws.Cell(1, 4).Value = "Cédula";
-                ws.Cell(1, 5).Value = "Email";
-                ws.Cell(1, 6).Value = "Teléfono";
-                ws.Cell(1, 7).Value = "Empresa";
-                ws.Cell(1, 8).Value = "Cargo";
-                ws.Cell(1, 9).Value = "Dependientes";
-                ws.Cell(1, 10).Value = "Estado";
-                ws.Cell(1, 11).Value = "Fecha Registro";
-
-                var headerRange = ws.Range(1, 1, 1, 11);
-                headerRange.Style.Font.Bold = true;
-                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
-                headerRange.Style.Font.FontColor = XLColor.White;
-                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                for (int i = 0; i < affiliates.Count; i++)
+                byte[] content;
+                using (var workbook = new XLWorkbook())
                 {
-                    var a = affiliates[i];
-                    var row = i + 2;
-                    ws.Cell(row, 1).Value = a.AffiliateNumber;
-                    ws.Cell(row, 2).Value = a.FirstName;
-                    ws.Cell(row, 3).Value = a.LastName;
-                    ws.Cell(row, 4).Value = a.Identification;
-                    ws.Cell(row, 5).Value = a.Email;
-                    ws.Cell(row, 6).Value = a.Phone;
-                    ws.Cell(row, 7).Value = a.Company?.Name ?? "";
-                    ws.Cell(row, 8).Value = a.Position;
-                    ws.Cell(row, 9).Value = a.Dependents.Count;
-                    ws.Cell(row, 10).Value = a.IsActive ? "Activo" : "Inactivo";
-                    ws.Cell(row, 11).Value = a.CreatedAt.ToString("dd/MM/yyyy");
+                    var ws = workbook.Worksheets.Add("Titulares");
 
-                    if (i % 2 == 1)
-                        ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                    ws.Cell(1, 1).Value = "Nº Afiliado";
+                    ws.Cell(1, 2).Value = "Nombre";
+                    ws.Cell(1, 3).Value = "Apellido";
+                    ws.Cell(1, 4).Value = "Cédula";
+                    ws.Cell(1, 5).Value = "Email";
+                    ws.Cell(1, 6).Value = "Teléfono";
+                    ws.Cell(1, 7).Value = "Empresa";
+                    ws.Cell(1, 8).Value = "Cargo";
+                    ws.Cell(1, 9).Value = "Dependientes";
+                    ws.Cell(1, 10).Value = "Estado";
+                    ws.Cell(1, 11).Value = "Fecha Registro";
+
+                    var headerRange = ws.Range(1, 1, 1, 11);
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                    headerRange.Style.Font.FontColor = XLColor.White;
+                    headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                    for (int i = 0; i < affiliates.Count; i++)
+                    {
+                        var a = affiliates[i];
+                        var row = i + 2;
+                        ws.Cell(row, 1).Value = a.AffiliateNumber;
+                        ws.Cell(row, 2).Value = a.FirstName;
+                        ws.Cell(row, 3).Value = a.LastName;
+                        ws.Cell(row, 4).Value = a.Identification;
+                        ws.Cell(row, 5).Value = a.Email;
+                        ws.Cell(row, 6).Value = a.Phone;
+                        ws.Cell(row, 7).Value = a.Company?.Name ?? "";
+                        ws.Cell(row, 8).Value = a.Position;
+                        ws.Cell(row, 9).Value = a.Dependents.Count;
+                        ws.Cell(row, 10).Value = a.IsActive ? "Activo" : "Inactivo";
+                        ws.Cell(row, 11).Value = a.CreatedAt.ToString("dd/MM/yyyy");
+
+                        if (i % 2 == 1)
+                            ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                    }
+
+                    ws.Columns().AdjustToContents();
+
+                    using var stream = new MemoryStream();
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
                 }
-
-                ws.Columns().AdjustToContents();
-
-                using var stream = new MemoryStream();
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -164,53 +170,56 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(d => d.LastName)
                     .ToListAsync();
 
-                using var workbook = new XLWorkbook();
-                var ws = workbook.Worksheets.Add("Dependientes");
-
-                ws.Cell(1, 1).Value = "Nº Dependiente";
-                ws.Cell(1, 2).Value = "Nombre";
-                ws.Cell(1, 3).Value = "Apellido";
-                ws.Cell(1, 4).Value = "Cédula";
-                ws.Cell(1, 5).Value = "Parentesco";
-                ws.Cell(1, 6).Value = "Teléfono";
-                ws.Cell(1, 7).Value = "Titular";
-                ws.Cell(1, 8).Value = "Nº Afiliado";
-                ws.Cell(1, 9).Value = "Empresa";
-                ws.Cell(1, 10).Value = "Estado";
-                ws.Cell(1, 11).Value = "Fecha Registro";
-
-                var headerRange = ws.Range(1, 1, 1, 11);
-                headerRange.Style.Font.Bold = true;
-                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
-                headerRange.Style.Font.FontColor = XLColor.White;
-                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                for (int i = 0; i < dependents.Count; i++)
+                byte[] content;
+                using (var workbook = new XLWorkbook())
                 {
-                    var d = dependents[i];
-                    var row = i + 2;
-                    ws.Cell(row, 1).Value = d.DependentNumber;
-                    ws.Cell(row, 2).Value = d.FirstName;
-                    ws.Cell(row, 3).Value = d.LastName;
-                    ws.Cell(row, 4).Value = d.Identification;
-                    ws.Cell(row, 5).Value = d.Relationship;
-                    ws.Cell(row, 6).Value = d.Phone;
-                    ws.Cell(row, 7).Value = d.Affiliate != null
-                        ? $"{d.Affiliate.FirstName} {d.Affiliate.LastName}" : "";
-                    ws.Cell(row, 8).Value = d.Affiliate?.AffiliateNumber ?? "";
-                    ws.Cell(row, 9).Value = d.Affiliate?.Company?.Name ?? "";
-                    ws.Cell(row, 10).Value = d.IsActive ? "Activo" : "Inactivo";
-                    ws.Cell(row, 11).Value = d.CreatedAt.ToString("dd/MM/yyyy");
+                    var ws = workbook.Worksheets.Add("Dependientes");
 
-                    if (i % 2 == 1)
-                        ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                    ws.Cell(1, 1).Value = "Nº Dependiente";
+                    ws.Cell(1, 2).Value = "Nombre";
+                    ws.Cell(1, 3).Value = "Apellido";
+                    ws.Cell(1, 4).Value = "Cédula";
+                    ws.Cell(1, 5).Value = "Parentesco";
+                    ws.Cell(1, 6).Value = "Teléfono";
+                    ws.Cell(1, 7).Value = "Titular";
+                    ws.Cell(1, 8).Value = "Nº Afiliado";
+                    ws.Cell(1, 9).Value = "Empresa";
+                    ws.Cell(1, 10).Value = "Estado";
+                    ws.Cell(1, 11).Value = "Fecha Registro";
+
+                    var headerRange = ws.Range(1, 1, 1, 11);
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                    headerRange.Style.Font.FontColor = XLColor.White;
+                    headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                    for (int i = 0; i < dependents.Count; i++)
+                    {
+                        var d = dependents[i];
+                        var row = i + 2;
+                        ws.Cell(row, 1).Value = d.DependentNumber;
+                        ws.Cell(row, 2).Value = d.FirstName;
+                        ws.Cell(row, 3).Value = d.LastName;
+                        ws.Cell(row, 4).Value = d.Identification;
+                        ws.Cell(row, 5).Value = d.Relationship;
+                        ws.Cell(row, 6).Value = d.Phone;
+                        ws.Cell(row, 7).Value = d.Affiliate != null
+                            ? $"{d.Affiliate.FirstName} {d.Affiliate.LastName}" : "";
+                        ws.Cell(row, 8).Value = d.Affiliate?.AffiliateNumber ?? "";
+                        ws.Cell(row, 9).Value = d.Affiliate?.Company?.Name ?? "";
+                        ws.Cell(row, 10).Value = d.IsActive ? "Activo" : "Inactivo";
+                        ws.Cell(row, 11).Value = d.CreatedAt.ToString("dd/MM/yyyy");
+
+                        if (i % 2 == 1)
+                            ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                    }
+
+                    ws.Columns().AdjustToContents();
+
+                    using var stream = new MemoryStream();
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
                 }
-
-                ws.Columns().AdjustToContents();
-
-                using var stream = new MemoryStream();
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -236,47 +245,50 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
-                using var workbook = new XLWorkbook();
-                var ws = workbook.Worksheets.Add("Titulares por Empresa");
-
-                ws.Cell(1, 1).Value = "Empresa";
-                ws.Cell(1, 2).Value = "Nº Afiliado";
-                ws.Cell(1, 3).Value = "Nombre Completo";
-                ws.Cell(1, 4).Value = "Cédula";
-                ws.Cell(1, 5).Value = "Cargo";
-                ws.Cell(1, 6).Value = "Dependientes";
-                ws.Cell(1, 7).Value = "Estado";
-
-                var headerRange = ws.Range(1, 1, 1, 7);
-                headerRange.Style.Font.Bold = true;
-                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
-                headerRange.Style.Font.FontColor = XLColor.White;
-                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                int row = 2;
-                foreach (var company in companies)
+                byte[] content;
+                using (var workbook = new XLWorkbook())
                 {
-                    foreach (var a in company.Affiliates.OrderBy(a => a.LastName))
+                    var ws = workbook.Worksheets.Add("Titulares por Empresa");
+
+                    ws.Cell(1, 1).Value = "Empresa";
+                    ws.Cell(1, 2).Value = "Nº Afiliado";
+                    ws.Cell(1, 3).Value = "Nombre Completo";
+                    ws.Cell(1, 4).Value = "Cédula";
+                    ws.Cell(1, 5).Value = "Cargo";
+                    ws.Cell(1, 6).Value = "Dependientes";
+                    ws.Cell(1, 7).Value = "Estado";
+
+                    var headerRange = ws.Range(1, 1, 1, 7);
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                    headerRange.Style.Font.FontColor = XLColor.White;
+                    headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                    int row = 2;
+                    foreach (var company in companies)
                     {
-                        ws.Cell(row, 1).Value = company.Name;
-                        ws.Cell(row, 2).Value = a.AffiliateNumber;
-                        ws.Cell(row, 3).Value = $"{a.FirstName} {a.LastName}";
-                        ws.Cell(row, 4).Value = a.Identification;
-                        ws.Cell(row, 5).Value = a.Position;
-                        ws.Cell(row, 6).Value = a.Dependents.Count;
-                        ws.Cell(row, 7).Value = a.IsActive ? "Activo" : "Inactivo";
+                        foreach (var a in company.Affiliates.OrderBy(a => a.LastName))
+                        {
+                            ws.Cell(row, 1).Value = company.Name;
+                            ws.Cell(row, 2).Value = a.AffiliateNumber;
+                            ws.Cell(row, 3).Value = $"{a.FirstName} {a.LastName}";
+                            ws.Cell(row, 4).Value = a.Identification;
+                            ws.Cell(row, 5).Value = a.Position;
+                            ws.Cell(row, 6).Value = a.Dependents.Count;
+                            ws.Cell(row, 7).Value = a.IsActive ? "Activo" : "Inactivo";
 
-                        if (row % 2 == 1)
-                            ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
-                        row++;
+                            if (row % 2 == 1)
+                                ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                            row++;
+                        }
                     }
+
+                    ws.Columns().AdjustToContents();
+
+                    using var stream = new MemoryStream();
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
                 }
-
-                ws.Columns().AdjustToContents();
-
-                using var stream = new MemoryStream();
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -302,58 +314,61 @@ namespace Genesis_Core_Api.Controllers
                     .OrderByDescending(p => p.PaymentDate)
                     .ToListAsync();
 
-                using var workbook = new XLWorkbook();
-                var ws = workbook.Worksheets.Add("Pagos");
-
-                ws.Cell(1, 1).Value = "ID";
-                ws.Cell(1, 2).Value = "Nº Afiliado";
-                ws.Cell(1, 3).Value = "Nombre Completo";
-                ws.Cell(1, 4).Value = "Empresa";
-                ws.Cell(1, 5).Value = "Fecha Pago";
-                ws.Cell(1, 6).Value = "Fecha Vencimiento";
-                ws.Cell(1, 7).Value = "Monto";
-                ws.Cell(1, 8).Value = "Método de Pago";
-                ws.Cell(1, 9).Value = "Nº Referencia";
-                ws.Cell(1, 10).Value = "Estado";
-                ws.Cell(1, 11).Value = "Notas";
-
-                var headerRange = ws.Range(1, 1, 1, 11);
-                headerRange.Style.Font.Bold = true;
-                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
-                headerRange.Style.Font.FontColor = XLColor.White;
-                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                for (int i = 0; i < payments.Count; i++)
+                byte[] content;
+                using (var workbook = new XLWorkbook())
                 {
-                    var p = payments[i];
-                    var row = i + 2;
-                    ws.Cell(row, 1).Value = p.Id;
-                    ws.Cell(row, 2).Value = p.Affiliate?.AffiliateNumber ?? "";
-                    ws.Cell(row, 3).Value = p.Affiliate != null ? $"{p.Affiliate.FirstName} {p.Affiliate.LastName}" : "";
-                    ws.Cell(row, 4).Value = p.Affiliate?.Company?.Name ?? "";
-                    ws.Cell(row, 5).Value = p.PaymentDate.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 6).Value = p.DueDate.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 7).Value = (double)p.Amount;
-                    ws.Cell(row, 7).Style.NumberFormat.Format = "#,##0.00";
-                    ws.Cell(row, 8).Value = p.PaymentMethod;
-                    ws.Cell(row, 9).Value = p.ReferenceNumber ?? "";
-                    ws.Cell(row, 10).Value = p.Status switch
+                    var ws = workbook.Worksheets.Add("Pagos");
+
+                    ws.Cell(1, 1).Value = "ID";
+                    ws.Cell(1, 2).Value = "Nº Afiliado";
+                    ws.Cell(1, 3).Value = "Nombre Completo";
+                    ws.Cell(1, 4).Value = "Empresa";
+                    ws.Cell(1, 5).Value = "Fecha Pago";
+                    ws.Cell(1, 6).Value = "Fecha Vencimiento";
+                    ws.Cell(1, 7).Value = "Monto";
+                    ws.Cell(1, 8).Value = "Método de Pago";
+                    ws.Cell(1, 9).Value = "Nº Referencia";
+                    ws.Cell(1, 10).Value = "Estado";
+                    ws.Cell(1, 11).Value = "Notas";
+
+                    var headerRange = ws.Range(1, 1, 1, 11);
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                    headerRange.Style.Font.FontColor = XLColor.White;
+                    headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                    for (int i = 0; i < payments.Count; i++)
                     {
-                        PaymentStatus.Paid => "Pagado",
-                        PaymentStatus.Overdue => "Vencido",
-                        _ => "Pendiente"
-                    };
-                    ws.Cell(row, 11).Value = p.Notes ?? "";
+                        var p = payments[i];
+                        var row = i + 2;
+                        ws.Cell(row, 1).Value = p.Id;
+                        ws.Cell(row, 2).Value = p.Affiliate?.AffiliateNumber ?? "";
+                        ws.Cell(row, 3).Value = p.Affiliate != null ? $"{p.Affiliate.FirstName} {p.Affiliate.LastName}" : "";
+                        ws.Cell(row, 4).Value = p.Affiliate?.Company?.Name ?? "";
+                        ws.Cell(row, 5).Value = p.PaymentDate.ToString("dd/MM/yyyy");
+                        ws.Cell(row, 6).Value = p.DueDate.ToString("dd/MM/yyyy");
+                        ws.Cell(row, 7).Value = (double)p.Amount;
+                        ws.Cell(row, 7).Style.NumberFormat.Format = "#,##0.00";
+                        ws.Cell(row, 8).Value = p.PaymentMethod;
+                        ws.Cell(row, 9).Value = p.ReferenceNumber ?? "";
+                        ws.Cell(row, 10).Value = p.Status switch
+                        {
+                            PaymentStatus.Paid => "Pagado",
+                            PaymentStatus.Overdue => "Vencido",
+                            _ => "Pendiente"
+                        };
+                        ws.Cell(row, 11).Value = p.Notes ?? "";
 
-                    if (i % 2 == 1)
-                        ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                        if (i % 2 == 1)
+                            ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                    }
+
+                    ws.Columns().AdjustToContents();
+
+                    using var stream = new MemoryStream();
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
                 }
-
-                ws.Columns().AdjustToContents();
-
-                using var stream = new MemoryStream();
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -380,56 +395,59 @@ namespace Genesis_Core_Api.Controllers
                         .ThenByDescending(p => p.PaymentDate)
                     .ToListAsync();
 
-                using var workbook = new XLWorkbook();
-                var ws = workbook.Worksheets.Add("Pagos por Estado");
-
-                ws.Cell(1, 1).Value = "Estado";
-                ws.Cell(1, 2).Value = "Nº Afiliado";
-                ws.Cell(1, 3).Value = "Nombre Completo";
-                ws.Cell(1, 4).Value = "Empresa";
-                ws.Cell(1, 5).Value = "Fecha Pago";
-                ws.Cell(1, 6).Value = "Fecha Vencimiento";
-                ws.Cell(1, 7).Value = "Monto";
-                ws.Cell(1, 8).Value = "Método de Pago";
-                ws.Cell(1, 9).Value = "Nº Referencia";
-                ws.Cell(1, 10).Value = "Notas";
-
-                var headerRange = ws.Range(1, 1, 1, 10);
-                headerRange.Style.Font.Bold = true;
-                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
-                headerRange.Style.Font.FontColor = XLColor.White;
-                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                for (int i = 0; i < payments.Count; i++)
+                byte[] content;
+                using (var workbook = new XLWorkbook())
                 {
-                    var p = payments[i];
-                    var row = i + 2;
-                    ws.Cell(row, 1).Value = p.Status switch
+                    var ws = workbook.Worksheets.Add("Pagos por Estado");
+
+                    ws.Cell(1, 1).Value = "Estado";
+                    ws.Cell(1, 2).Value = "Nº Afiliado";
+                    ws.Cell(1, 3).Value = "Nombre Completo";
+                    ws.Cell(1, 4).Value = "Empresa";
+                    ws.Cell(1, 5).Value = "Fecha Pago";
+                    ws.Cell(1, 6).Value = "Fecha Vencimiento";
+                    ws.Cell(1, 7).Value = "Monto";
+                    ws.Cell(1, 8).Value = "Método de Pago";
+                    ws.Cell(1, 9).Value = "Nº Referencia";
+                    ws.Cell(1, 10).Value = "Notas";
+
+                    var headerRange = ws.Range(1, 1, 1, 10);
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                    headerRange.Style.Font.FontColor = XLColor.White;
+                    headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                    for (int i = 0; i < payments.Count; i++)
                     {
-                        PaymentStatus.Paid => "Pagado",
-                        PaymentStatus.Overdue => "Vencido",
-                        _ => "Pendiente"
-                    };
-                    ws.Cell(row, 2).Value = p.Affiliate?.AffiliateNumber ?? "";
-                    ws.Cell(row, 3).Value = p.Affiliate != null ? $"{p.Affiliate.FirstName} {p.Affiliate.LastName}" : "";
-                    ws.Cell(row, 4).Value = p.Affiliate?.Company?.Name ?? "";
-                    ws.Cell(row, 5).Value = p.PaymentDate.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 6).Value = p.DueDate.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 7).Value = (double)p.Amount;
-                    ws.Cell(row, 7).Style.NumberFormat.Format = "#,##0.00";
-                    ws.Cell(row, 8).Value = p.PaymentMethod;
-                    ws.Cell(row, 9).Value = p.ReferenceNumber ?? "";
-                    ws.Cell(row, 10).Value = p.Notes ?? "";
+                        var p = payments[i];
+                        var row = i + 2;
+                        ws.Cell(row, 1).Value = p.Status switch
+                        {
+                            PaymentStatus.Paid => "Pagado",
+                            PaymentStatus.Overdue => "Vencido",
+                            _ => "Pendiente"
+                        };
+                        ws.Cell(row, 2).Value = p.Affiliate?.AffiliateNumber ?? "";
+                        ws.Cell(row, 3).Value = p.Affiliate != null ? $"{p.Affiliate.FirstName} {p.Affiliate.LastName}" : "";
+                        ws.Cell(row, 4).Value = p.Affiliate?.Company?.Name ?? "";
+                        ws.Cell(row, 5).Value = p.PaymentDate.ToString("dd/MM/yyyy");
+                        ws.Cell(row, 6).Value = p.DueDate.ToString("dd/MM/yyyy");
+                        ws.Cell(row, 7).Value = (double)p.Amount;
+                        ws.Cell(row, 7).Style.NumberFormat.Format = "#,##0.00";
+                        ws.Cell(row, 8).Value = p.PaymentMethod;
+                        ws.Cell(row, 9).Value = p.ReferenceNumber ?? "";
+                        ws.Cell(row, 10).Value = p.Notes ?? "";
 
-                    if (i % 2 == 1)
-                        ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                        if (i % 2 == 1)
+                            ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                    }
+
+                    ws.Columns().AdjustToContents();
+
+                    using var stream = new MemoryStream();
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
                 }
-
-                ws.Columns().AdjustToContents();
-
-                using var stream = new MemoryStream();
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -455,62 +473,65 @@ namespace Genesis_Core_Api.Controllers
                     .OrderBy(c => c.Name)
                     .ToListAsync();
 
-                using var workbook = new XLWorkbook();
-                var ws = workbook.Worksheets.Add("Pagos por Empresa");
-
-                ws.Cell(1, 1).Value = "Empresa";
-                ws.Cell(1, 2).Value = "Nº Afiliado";
-                ws.Cell(1, 3).Value = "Nombre Completo";
-                ws.Cell(1, 4).Value = "Fecha Pago";
-                ws.Cell(1, 5).Value = "Fecha Vencimiento";
-                ws.Cell(1, 6).Value = "Monto";
-                ws.Cell(1, 7).Value = "Método de Pago";
-                ws.Cell(1, 8).Value = "Nº Referencia";
-                ws.Cell(1, 9).Value = "Estado";
-                ws.Cell(1, 10).Value = "Notas";
-
-                var headerRange = ws.Range(1, 1, 1, 10);
-                headerRange.Style.Font.Bold = true;
-                headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
-                headerRange.Style.Font.FontColor = XLColor.White;
-                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
-                int row = 2;
-                foreach (var company in companies)
+                byte[] content;
+                using (var workbook = new XLWorkbook())
                 {
-                    foreach (var a in company.Affiliates.OrderBy(a => a.LastName))
-                    {
-                        foreach (var p in a.Payments.OrderByDescending(p => p.PaymentDate))
-                        {
-                            ws.Cell(row, 1).Value = company.Name;
-                            ws.Cell(row, 2).Value = a.AffiliateNumber;
-                            ws.Cell(row, 3).Value = $"{a.FirstName} {a.LastName}";
-                            ws.Cell(row, 4).Value = p.PaymentDate.ToString("dd/MM/yyyy");
-                            ws.Cell(row, 5).Value = p.DueDate.ToString("dd/MM/yyyy");
-                            ws.Cell(row, 6).Value = (double)p.Amount;
-                            ws.Cell(row, 6).Style.NumberFormat.Format = "#,##0.00";
-                            ws.Cell(row, 7).Value = p.PaymentMethod;
-                            ws.Cell(row, 8).Value = p.ReferenceNumber ?? "";
-                            ws.Cell(row, 9).Value = p.Status switch
-                            {
-                                PaymentStatus.Paid => "Pagado",
-                                PaymentStatus.Overdue => "Vencido",
-                                _ => "Pendiente"
-                            };
-                            ws.Cell(row, 10).Value = p.Notes ?? "";
+                    var ws = workbook.Worksheets.Add("Pagos por Empresa");
 
-                            if (row % 2 == 1)
-                                ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
-                            row++;
+                    ws.Cell(1, 1).Value = "Empresa";
+                    ws.Cell(1, 2).Value = "Nº Afiliado";
+                    ws.Cell(1, 3).Value = "Nombre Completo";
+                    ws.Cell(1, 4).Value = "Fecha Pago";
+                    ws.Cell(1, 5).Value = "Fecha Vencimiento";
+                    ws.Cell(1, 6).Value = "Monto";
+                    ws.Cell(1, 7).Value = "Método de Pago";
+                    ws.Cell(1, 8).Value = "Nº Referencia";
+                    ws.Cell(1, 9).Value = "Estado";
+                    ws.Cell(1, 10).Value = "Notas";
+
+                    var headerRange = ws.Range(1, 1, 1, 10);
+                    headerRange.Style.Font.Bold = true;
+                    headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F0A500");
+                    headerRange.Style.Font.FontColor = XLColor.White;
+                    headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                    int row = 2;
+                    foreach (var company in companies)
+                    {
+                        foreach (var a in company.Affiliates.OrderBy(a => a.LastName))
+                        {
+                            foreach (var p in a.Payments.OrderByDescending(p => p.PaymentDate))
+                            {
+                                ws.Cell(row, 1).Value = company.Name;
+                                ws.Cell(row, 2).Value = a.AffiliateNumber;
+                                ws.Cell(row, 3).Value = $"{a.FirstName} {a.LastName}";
+                                ws.Cell(row, 4).Value = p.PaymentDate.ToString("dd/MM/yyyy");
+                                ws.Cell(row, 5).Value = p.DueDate.ToString("dd/MM/yyyy");
+                                ws.Cell(row, 6).Value = (double)p.Amount;
+                                ws.Cell(row, 6).Style.NumberFormat.Format = "#,##0.00";
+                                ws.Cell(row, 7).Value = p.PaymentMethod;
+                                ws.Cell(row, 8).Value = p.ReferenceNumber ?? "";
+                                ws.Cell(row, 9).Value = p.Status switch
+                                {
+                                    PaymentStatus.Paid => "Pagado",
+                                    PaymentStatus.Overdue => "Vencido",
+                                    _ => "Pendiente"
+                                };
+                                ws.Cell(row, 10).Value = p.Notes ?? "";
+
+                                if (row % 2 == 1)
+                                    ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                                row++;
+                            }
                         }
                     }
+
+                    ws.Columns().AdjustToContents();
+
+                    using var stream = new MemoryStream();
+                    workbook.SaveAs(stream);
+                    content = stream.ToArray();
                 }
-
-                ws.Columns().AdjustToContents();
-
-                using var stream = new MemoryStream();
-                workbook.SaveAs(stream);
-                var content = stream.ToArray();
 
                 return File(content,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
