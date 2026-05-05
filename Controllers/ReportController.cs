@@ -333,7 +333,8 @@ namespace Genesis_Core_Api.Controllers
                     ws.Cell(row, 4).Value = p.Affiliate?.Company?.Name ?? "";
                     ws.Cell(row, 5).Value = p.PaymentDate.ToString("dd/MM/yyyy");
                     ws.Cell(row, 6).Value = p.DueDate.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 7).Value = p.Amount;
+                    ws.Cell(row, 7).Value = (double)p.Amount;
+                    ws.Cell(row, 7).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(row, 8).Value = p.PaymentMethod;
                     ws.Cell(row, 9).Value = p.ReferenceNumber ?? "";
                     ws.Cell(row, 10).Value = p.Status switch
@@ -348,7 +349,6 @@ namespace Genesis_Core_Api.Controllers
                         ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
                 }
 
-                ws.Column(7).Style.NumberFormat.Format = "#,##0.00";
                 ws.Columns().AdjustToContents();
 
                 using var stream = new MemoryStream();
@@ -415,7 +415,8 @@ namespace Genesis_Core_Api.Controllers
                     ws.Cell(row, 4).Value = p.Affiliate?.Company?.Name ?? "";
                     ws.Cell(row, 5).Value = p.PaymentDate.ToString("dd/MM/yyyy");
                     ws.Cell(row, 6).Value = p.DueDate.ToString("dd/MM/yyyy");
-                    ws.Cell(row, 7).Value = p.Amount;
+                    ws.Cell(row, 7).Value = (double)p.Amount;
+                    ws.Cell(row, 7).Style.NumberFormat.Format = "#,##0.00";
                     ws.Cell(row, 8).Value = p.PaymentMethod;
                     ws.Cell(row, 9).Value = p.ReferenceNumber ?? "";
                     ws.Cell(row, 10).Value = p.Notes ?? "";
@@ -424,7 +425,6 @@ namespace Genesis_Core_Api.Controllers
                         ws.Row(row).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
                 }
 
-                ws.Column(7).Style.NumberFormat.Format = "#,##0.00";
                 ws.Columns().AdjustToContents();
 
                 using var stream = new MemoryStream();
@@ -487,7 +487,8 @@ namespace Genesis_Core_Api.Controllers
                             ws.Cell(row, 3).Value = $"{a.FirstName} {a.LastName}";
                             ws.Cell(row, 4).Value = p.PaymentDate.ToString("dd/MM/yyyy");
                             ws.Cell(row, 5).Value = p.DueDate.ToString("dd/MM/yyyy");
-                            ws.Cell(row, 6).Value = p.Amount;
+                            ws.Cell(row, 6).Value = (double)p.Amount;
+                            ws.Cell(row, 6).Style.NumberFormat.Format = "#,##0.00";
                             ws.Cell(row, 7).Value = p.PaymentMethod;
                             ws.Cell(row, 8).Value = p.ReferenceNumber ?? "";
                             ws.Cell(row, 9).Value = p.Status switch
@@ -505,7 +506,6 @@ namespace Genesis_Core_Api.Controllers
                     }
                 }
 
-                ws.Column(6).Style.NumberFormat.Format = "#,##0.00";
                 ws.Columns().AdjustToContents();
 
                 using var stream = new MemoryStream();
