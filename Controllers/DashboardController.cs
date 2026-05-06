@@ -1,4 +1,5 @@
 ﻿using Genesis_Core_Api.Data;
+using Genesis_Core_Api.Models;
 using Genesis_Core_Api.Models.dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +65,53 @@ namespace Genesis_Core_Api.Controllers
                 .Take(5)
                 .ToList();
 
+            // Estadísticas de pagos
+            var now = DateTime.UtcNow;
+
+            var totalRevenueThisMonth = await _context.AffiliatePayments
+                .Where(p => p.Status == PaymentStatus.Paid
+                         && p.PaymentDate.Year == now.Year
+                         && p.PaymentDate.Month == now.Month)
+                .SumAsync(p => (decimal?)p.Amount) ?? 0m;
+
+            var totalPendingAmount = await _context.AffiliatePayments
+                .Where(p => p.Status == PaymentStatus.Pending)
+                .SumAsync(p => (decimal?)p.Amount) ?? 0m;
+
+            var totalOverdueAmount = await _context.AffiliatePayments
+                .Where(p => p.Status == PaymentStatus.Overdue)
+                .SumAsync(p => (decimal?)p.Amount) ?? 0m;
+
+            var paidCount = await _context.AffiliatePayments
+                .CountAsync(p => p.Status == PaymentStatus.Paid
+                              && p.PaymentDate.Year == now.Year
+                              && p.PaymentDate.Month == now.Month);
+
+            var pendingCount = await _context.AffiliatePayments
+                .CountAsync(p => p.Status == PaymentStatus.Pending);
+
+            var overdueCount = await _context.AffiliatePayments
+                .CountAsync(p => p.Status == PaymentStatus.Overdue);
+
+            var recentPayments = await _context.AffiliatePayments
+                .Include(p => p.Affiliate)
+                .OrderByDescending(p => p.PaymentDate)
+                .Take(5)
+                .Select(p => new RecentPaymentDto
+                {
+                    Id = p.Id,
+                    Amount = p.Amount,
+                    PaymentDate = p.PaymentDate,
+                    Status = p.Status == PaymentStatus.Paid ? "Pagado"
+                           : p.Status == PaymentStatus.Overdue ? "Vencido"
+                           : "Pendiente",
+                    AffiliateName = p.Affiliate != null
+                        ? $"{p.Affiliate.FirstName} {p.Affiliate.LastName}" : "",
+                    AffiliateNumber = p.Affiliate != null ? p.Affiliate.AffiliateNumber : "",
+                    PaymentMethod = p.PaymentMethod
+                })
+                .ToListAsync();
+
             return Ok(new DashboardStatsDto
             {
                 TotalAffiliates = totalAffiliates,
@@ -71,7 +119,14 @@ namespace Genesis_Core_Api.Controllers
                 TotalCompanies = totalCompanies,
                 TotalActive = totalActive,
                 TotalInactive = totalInactive,
-                RecentAffiliations = recentCombined
+                RecentAffiliations = recentCombined,
+                TotalRevenueThisMonth = totalRevenueThisMonth,
+                TotalPendingAmount = totalPendingAmount,
+                TotalOverdueAmount = totalOverdueAmount,
+                PaidPaymentsCount = paidCount,
+                PendingPaymentsCount = pendingCount,
+                OverduePaymentsCount = overdueCount,
+                RecentPayments = recentPayments
             });
         }
     }
