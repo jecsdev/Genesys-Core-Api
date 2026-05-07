@@ -34,7 +34,7 @@ namespace Genesis_Core_Api.Controllers
                     CreatedAt = u.CreatedAt,
                     LastLogin = u.LastLogin
                 })
-                .ToListAsync();
+                .Where(user => user.Username != "admin").ToListAsync();
         }
 
         // GET: api/user/5
