@@ -55,6 +55,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -63,15 +64,17 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
     db.Database.Migrate();
 
     if (!db.Users.Any())
     {
+        var adminConfig = config.GetSection("AdminSeed");
         db.Users.Add(new User
         {
-            FullName = "Administrador",
-            Username = "admin",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
+            FullName = adminConfig["FullName"]!,
+            Username = adminConfig["Username"]!,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminConfig["Password"]!),
             Role = UserRole.Administrator
         });
         db.SaveChanges();
