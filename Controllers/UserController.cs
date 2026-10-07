@@ -21,6 +21,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/user
         [HttpGet]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
             return await _context.Users
@@ -39,6 +40,7 @@ namespace Genesis_Core_Api.Controllers
 
         // GET: api/user/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<UserDto>> GetUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
@@ -120,6 +122,7 @@ namespace Genesis_Core_Api.Controllers
 
         // PUT: api/user/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> PutUser(int id, [FromBody] UpdateUserDto dto)
         {
             var user = await _context.Users.FindAsync(id);

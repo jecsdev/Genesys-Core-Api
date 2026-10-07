@@ -1,6 +1,7 @@
 ﻿using Genesis_Core_Api.Data;
 using Genesis_Core_Api.Models;
 using Genesis_Core_Api.Models.dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -108,6 +109,7 @@ namespace Genesis_Core_Api.Controllers
 
         // POST: api/Dependent
         [HttpPost]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<ActionResult<DependentDto>> PostDependent(CreateDependentDto dto)
         {
             // Generar número de dependiente automáticamente
@@ -156,6 +158,7 @@ namespace Genesis_Core_Api.Controllers
 
         // PUT: api/Dependent/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<IActionResult> PutDependent(int id, CreateDependentDto dto)
         {
             var dependent = await _context.Dependents.FindAsync(id);
@@ -178,6 +181,7 @@ namespace Genesis_Core_Api.Controllers
 
         // DELETE: api/Dependent/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<IActionResult> DeleteDependent(int id)
         {
             var dependent = await _context.Dependents.FindAsync(id);

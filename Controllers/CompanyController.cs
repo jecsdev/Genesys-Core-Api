@@ -1,6 +1,7 @@
 ﻿using Genesis_Core_Api.Data;
 using Genesis_Core_Api.Models;
 using Genesis_Core_Api.Models.dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,6 +59,7 @@ namespace Genesis_Core_Api.Controllers
 
         // POST: api/Company
         [HttpPost]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<ActionResult<CompanyDto>> PostCompany(CreateCompanyDto dto)
         {
             var company = new Company
@@ -87,6 +89,7 @@ namespace Genesis_Core_Api.Controllers
 
         // PUT: api/Company/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<IActionResult> PutCompany(int id, CreateCompanyDto dto)
         {
             var company = await _context.Companies.FindAsync(id);
@@ -107,6 +110,7 @@ namespace Genesis_Core_Api.Controllers
 
         // DELETE: api/Company/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<IActionResult> DeleteCompany(int id)
         {
             var company = await _context.Companies.FindAsync(id);

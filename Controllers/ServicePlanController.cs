@@ -1,6 +1,7 @@
 ﻿using Genesis_Core_Api.Data;
 using Genesis_Core_Api.Models;
 using Genesis_Core_Api.Models.dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -69,6 +70,7 @@ namespace Genesis_Core_Api.Controllers
 
         // POST: api/serviceplan
         [HttpPost]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<ActionResult<ServicePlanDto>> PostServicePlan(CreateServicePlanDto dto)
         {
             var plan = new ServicePlan
@@ -106,6 +108,7 @@ namespace Genesis_Core_Api.Controllers
 
         // PUT: api/serviceplan/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<IActionResult> PutServicePlan(int id, CreateServicePlanDto dto)
         {
             var plan = await _context.ServicePlans
@@ -137,6 +140,7 @@ namespace Genesis_Core_Api.Controllers
 
         // DELETE: api/serviceplan/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<IActionResult> DeleteServicePlan(int id)
         {
             var plan = await _context.ServicePlans.FindAsync(id);

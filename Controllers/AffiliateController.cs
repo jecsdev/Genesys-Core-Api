@@ -1,6 +1,7 @@
 ﻿using Genesis_Core_Api.Data;
 using Genesis_Core_Api.Models;
 using Genesis_Core_Api.Models.dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -138,6 +139,7 @@ namespace Genesis_Core_Api.Controllers
 
         // POST: api/Affiliate
         [HttpPost]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<ActionResult<AffiliateDto>> PostAffiliate(CreateAffiliateDto dto)
         {
             // Validar que el plan exista y esté activo
@@ -197,6 +199,7 @@ namespace Genesis_Core_Api.Controllers
 
         // PUT: api/Affiliate/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<IActionResult> PutAffiliate(int id, CreateAffiliateDto dto)
         {
             var affiliate = await _context.Affiliates.FindAsync(id);
@@ -233,6 +236,7 @@ namespace Genesis_Core_Api.Controllers
 
         // DELETE: api/Affiliate/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator,Accountant")]
         public async Task<IActionResult> DeleteAffiliate(int id)
         {
             var affiliate = await _context.Affiliates.FindAsync(id);
